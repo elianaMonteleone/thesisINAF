@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+        id="cameo_stereotype"
+        name="Cameo Stereotype Ticket"
+        version="1.0"
+        provider-name="cameo.ticketing"
+        class="org.cameo.TicketingService">
+
+    <requires>
+        <api version="1.2"/>
+    </requires>
+
+    <runtime>
+        <library name="ticket.jar"/>
+    </runtime>
+</plugin>
