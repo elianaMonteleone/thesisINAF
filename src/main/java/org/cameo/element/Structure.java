@@ -14,6 +14,7 @@ import com.nomagic.uml2.ext.magicdraw.mdprofiles.Stereotype;
 import com.nomagic.uml2.impl.ElementsFactory;
 
 
+
 /**
  * @author Eliana
  */
@@ -27,13 +28,13 @@ public class Structure {
         this.f = project.getElementsFactory();
     }
 
-    public void execute( String description){
+    public void execute(Package packageTicket){
         this.project = Application.getInstance().getProject();
         SessionManager.getInstance().createSession(project, "Create a ticket");
         //ElementsFactory f = project.getElementsFactory();
-        Package packageTicket = f.createPackageInstance();
+        //Package packageTicket = f.createPackageInstance();
         //add created package into a root of the project
-        packageTicket.setOwner(project.getPrimaryModel());
+        //packageTicket.setOwner(project.getPrimaryModel());
         Class mdClass = f.createClassInstance();
         mdClass.setOwner(packageTicket);
         mdClass.setName("TicketClass");
@@ -49,14 +50,34 @@ public class Structure {
                 .find(project, "UML Standard Profile::UML2 Metamodel::PrimitiveTypes::String");
 
         property.setType(stringType);
-        property.setOwner(stereotype);
-        Comment comment = f.createCommentInstance();
-        comment.setBody(description);
-        comment.setOwner(stereotype);
+
         // apply changes and add a command into the command history.
+
+
         SessionManager.getInstance().closeSession(project);
     }
 
+    public void executeClass(Class element){
+        this.project = Application.getInstance().getProject();
+        SessionManager.getInstance().createSession(project, "Create a ticket");
+        Class mdClass = f.createClassInstance();
+        mdClass.setOwner(element);
+        mdClass.setName("TicketClass");
+        Stereotype stereotype = f.createStereotypeInstance();
+        stereotype.setName("Ticket");
+        stereotype.setOwner(element);
+        Property property = f.createPropertyInstance();
+        property.setName("Description: ");
+        var stringType = (Type) Finder.byQualifiedName()
+                .find(project, "UML Standard Profile::UML2 Metamodel::PrimitiveTypes::String");
+
+        property.setType(stringType);
+
+        // apply changes and add a command into the command history.
+
+
+        SessionManager.getInstance().closeSession(project);
+    }
 
     private void addStereotype(Class stereotypeClass) throws ReadOnlyElementException {
 

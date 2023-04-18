@@ -1,17 +1,8 @@
 package org.cameo.ui;
 
 
-import com.nomagic.magicdraw.core.Application;
-import com.nomagic.magicdraw.core.Project;
-import com.nomagic.magicdraw.openapi.uml.SessionManager;
-import com.nomagic.uml2.ext.jmi.helpers.StereotypesHelper;
-import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Class;
-import com.nomagic.uml2.ext.magicdraw.mdprofiles.Profile;
-import com.nomagic.uml2.ext.magicdraw.mdprofiles.Stereotype;
-import com.nomagic.uml2.impl.ElementsFactory;
-import org.cameo.element.Diagram;
+
 import org.cameo.element.Structure;
-import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Package;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -128,7 +119,7 @@ public class BaseTicketPanel extends JPanel {
         buttonOk.addActionListener(new ActionListener() {
                                        @Override
                                        public void actionPerformed(ActionEvent actionEvent) {
-                                           onOK(descriptionArea.getText());
+                                           onOK();
                                        }
                                    }
         );
@@ -173,9 +164,8 @@ public class BaseTicketPanel extends JPanel {
         );
     }
 
-    private void onOK(String description) {
+    private void onOK() {
         JOptionPane.showConfirmDialog(null, "Do you want to save the ticket?");
-        this.structure.execute(description);
     }
 
     private void onCancel() {

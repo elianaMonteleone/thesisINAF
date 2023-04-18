@@ -1,5 +1,4 @@
 org\cameo\TicketingService.class
-org\cameo\element\Diagram.class
 org\cameo\ui\BaseTicketPanel$1.class
 org\cameo\ui\TicketDialog.class
 org\cameo\ui\BaseTicketPanel.class
