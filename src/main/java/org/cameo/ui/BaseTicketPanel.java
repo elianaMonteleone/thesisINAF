@@ -12,6 +12,7 @@ import com.nomagic.uml2.impl.ElementsFactory;
 import org.cameo.element.Diagram;
 import org.cameo.element.Structure;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Package;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -79,7 +80,6 @@ public class BaseTicketPanel extends JPanel {
         description.setText("Description:");
 
 
-
         javax.swing.GroupLayout contentPanelLayout = new javax.swing.GroupLayout(contentPanel);
         contentPanel.setLayout(contentPanelLayout);
         contentPanelLayout.setHorizontalGroup(
@@ -95,7 +95,7 @@ public class BaseTicketPanel extends JPanel {
                                         .addGroup(contentPanelLayout.createSequentialGroup()
                                                 .addComponent(description)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(descriptionArea, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                                .addComponent(descriptionArea, 0, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)))
                                 .addContainerGap())
         );
         contentPanelLayout.setVerticalGroup(
@@ -114,14 +114,23 @@ public class BaseTicketPanel extends JPanel {
         );
 
         cancelButton.setText("Cancel");
+        cancelButton.addActionListener(new ActionListener() {
+
+                                           @Override
+                                           public void actionPerformed(ActionEvent actionEvent) {
+                                               onCancel();
+                                           }
+                                       }
+        );
+
 
         buttonOk.setText("OK");
         buttonOk.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                onOK();
-            }
-        }
+                                       @Override
+                                       public void actionPerformed(ActionEvent actionEvent) {
+                                           onOK(descriptionArea.getText());
+                                       }
+                                   }
         );
 
         javax.swing.GroupLayout buttonPanelLayout = new javax.swing.GroupLayout(buttonPanel);
@@ -164,25 +173,13 @@ public class BaseTicketPanel extends JPanel {
         );
     }
 
-    private void onOK() {
+    private void onOK(String description) {
         JOptionPane.showConfirmDialog(null, "Do you want to save the ticket?");
-        Project project = Application.getInstance().getProject();
-        SessionManager.getInstance().createSession(project, "Create a ticket");
-        ElementsFactory f = project.getElementsFactory();
-        Package packageTicket = f.createPackageInstance();
-//add created package into a root of the project
-        packageTicket.setOwner(project.getPrimaryModel());
-        Class mdClass = f.createClassInstance();
-        mdClass.setOwner(packageTicket);
-        mdClass.setName("TicketClass");
-        Profile profile = f.createProfileInstance();
-        profile.setName("My Ticket");
-        profile.setOwner(packageTicket);
-        Stereotype stereotype = f.createStereotypeInstance();
-        stereotype.setName("Ticket");
-        stereotype.setOwner(profile);
-        // apply changes and add a command into the command history.
-        SessionManager.getInstance().closeSession(project);
+        this.structure.execute(description);
+    }
+
+    private void onCancel() {
+        JOptionPane.showConfirmDialog(null, "Do you want to close the operation?");
     }
 
 

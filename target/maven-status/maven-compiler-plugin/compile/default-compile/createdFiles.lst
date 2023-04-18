@@ -4,5 +4,6 @@ org\cameo\ui\BaseTicketPanel$1.class
 org\cameo\ui\TicketDialog.class
 org\cameo\ui\BaseTicketPanel.class
 org\cameo\action\BrowserAction.class
+org\cameo\ui\BaseTicketPanel$2.class
 org\cameo\action\BrowserConfiguration.class
 org\cameo\element\Structure.class
