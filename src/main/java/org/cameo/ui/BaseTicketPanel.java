@@ -21,6 +21,7 @@ public class BaseTicketPanel extends JPanel {
     }
 
 
+
     @SuppressWarnings("unchecked")
     private void initComponents() {
 
@@ -70,7 +71,6 @@ public class BaseTicketPanel extends JPanel {
 
         description.setText("Description:");
 
-
         javax.swing.GroupLayout contentPanelLayout = new javax.swing.GroupLayout(contentPanel);
         contentPanel.setLayout(contentPanelLayout);
         contentPanelLayout.setHorizontalGroup(
@@ -86,7 +86,7 @@ public class BaseTicketPanel extends JPanel {
                                         .addGroup(contentPanelLayout.createSequentialGroup()
                                                 .addComponent(description)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(descriptionArea, 0, GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)))
+                                                .addComponent(descriptionArea, 300, GroupLayout.PREFERRED_SIZE, 300)))
                                 .addContainerGap())
         );
         contentPanelLayout.setVerticalGroup(
