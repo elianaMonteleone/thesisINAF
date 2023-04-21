@@ -11,9 +11,10 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Package;
 import com.nomagic.uml2.ext.magicdraw.mdprofiles.Profile;
 import com.nomagic.uml2.ext.magicdraw.mdprofiles.Stereotype;
 import com.nomagic.uml2.impl.ElementsFactory;
+import org.cameo.redmine.RedmineApi;
 import org.cameo.ui.BaseTicketPanel;
 
-
+import java.io.IOException;
 
 
 /**
@@ -52,8 +53,9 @@ public class Structure {
 
         property.setType(stringType);
         property.setOwner(stereotype);
+        RedmineApi api = new RedmineApi();
 
-        CoreHelper.setComment(stereotype,"");
+        //CoreHelper.setComment(stereotype,api.postIssue());
 
         // apply changes and add a command into the command history.
 
@@ -77,13 +79,18 @@ public class Structure {
 
         property.setType(stringType);
         property.setOwner(stereotype);
-        CoreHelper.setComment(stereotype, "");
+
+        RedmineApi api = new RedmineApi();
+        CoreHelper.setComment(stereotype,api.getIssueById());
 
         // apply changes and add a command into the command history.
 
 
         SessionManager.getInstance().closeSession(project);
     }
+
+
+
 
 
 

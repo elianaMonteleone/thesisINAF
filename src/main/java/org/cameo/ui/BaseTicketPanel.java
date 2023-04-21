@@ -1,8 +1,8 @@
 package org.cameo.ui;
 
 
-
 import org.cameo.element.Structure;
+import org.cameo.redmine.RedmineApi;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -38,6 +38,7 @@ public class BaseTicketPanel extends JPanel {
         cancelButton = new javax.swing.JButton();
         buttonOk = new javax.swing.JButton();
         structure = new Structure();
+        api = new RedmineApi();
 
         titlePanel.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -166,7 +167,9 @@ public class BaseTicketPanel extends JPanel {
 
     private void onOK() {
         JOptionPane.showConfirmDialog(null, "Do you want to save the ticket?");
+        api.postIssue();
     }
+
 
     private void onCancel() {
         JOptionPane.showConfirmDialog(null, "Do you want to close the operation?");
@@ -181,9 +184,10 @@ public class BaseTicketPanel extends JPanel {
     private javax.swing.JLabel taskName;
     private javax.swing.JLabel description;
     private javax.swing.JPanel jPanel1;
-    protected javax.swing.JTextArea descriptionArea;
+    public javax.swing.JTextArea descriptionArea;
     protected javax.swing.JTextField taskNameField;
     private javax.swing.JPanel titlePanel;
     protected javax.swing.JButton buttonOk;
     private Structure structure;
+    private RedmineApi api;
 }
