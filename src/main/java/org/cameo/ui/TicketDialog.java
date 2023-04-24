@@ -5,6 +5,10 @@ package org.cameo.ui;
 import javax.swing.*;
 import java.awt.*;
 
+
+/**
+ * Class for the creation of the Dialog
+ */
 public class TicketDialog extends JDialog {
 
 

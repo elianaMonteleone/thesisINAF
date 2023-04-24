@@ -12,15 +12,23 @@ import com.nomagic.uml2.ext.magicdraw.mdprofiles.Profile;
 import com.nomagic.uml2.ext.magicdraw.mdprofiles.Stereotype;
 import com.nomagic.uml2.impl.ElementsFactory;
 import org.cameo.redmine.RedmineApi;
-import org.cameo.ui.BaseTicketPanel;
 
-import java.io.IOException;
 
 
 /**
  * @author Eliana
  */
+
+
+/**
+ * Class for the creation of the graphic elements
+ *
+ * Class Ticket
+ * Profile Ticket
+ * Stereotype Ticket
+ */
 public class Structure {
+
 
     private Project project;
     private ElementsFactory f;
@@ -30,13 +38,16 @@ public class Structure {
         this.f = project.getElementsFactory();
     }
 
+    /**
+     * Method to display: Element class, Profile, Stereotype Ticket with an existing Package
+     * Important: to create an element, we have to establish a Session, that is a kind of transaction
+     * using SessionManager.
+     * @param packageTicket
+     */
+
     public void execute(Package packageTicket) {
         this.project = Application.getInstance().getProject();
         SessionManager.getInstance().createSession(project, "Create a ticket");
-        //ElementsFactory f = project.getElementsFactory();
-        //Package packageTicket = f.createPackageInstance();
-        //add created package into a root of the project
-        //packageTicket.setOwner(project.getPrimaryModel());
         Class mdClass = f.createClassInstance();
         mdClass.setOwner(packageTicket);
         mdClass.setName("TicketClass");
@@ -57,12 +68,15 @@ public class Structure {
 
         //CoreHelper.setComment(stereotype,api.postIssue());
 
-        // apply changes and add a command into the command history.
-
 
         SessionManager.getInstance().closeSession(project);
     }
 
+
+    /**
+     * Method to display elements of type: Class, Profile, Stereotype Ticket with an existing or new Block Element
+     * @param element
+     */
     public void executeClass(Class element) {
         this.project = Application.getInstance().getProject();
         SessionManager.getInstance().createSession(project, "Create a ticket");
@@ -82,10 +96,6 @@ public class Structure {
 
         RedmineApi api = new RedmineApi();
         CoreHelper.setComment(stereotype,api.getIssueById());
-
-        // apply changes and add a command into the command history.
-
-
         SessionManager.getInstance().closeSession(project);
     }
 

@@ -9,6 +9,11 @@ import com.nomagic.magicdraw.ui.browser.Tree;
 /**
  * @author Eliana
  */
+
+
+/**
+ * Class for the integration of the ticket action into the browser context menu
+ */
 public class BrowserConfiguration implements BrowserContextAMConfigurator {
 
     private final BrowserAction browserAction;
@@ -17,6 +22,12 @@ public class BrowserConfiguration implements BrowserContextAMConfigurator {
         this.browserAction = browserAction;
     }
 
+
+    /**
+     * Method should add or remove actions for given browser context menu.
+     * @param actionsManager
+     * @param tree
+     */
     @Override
     public void configure(ActionsManager actionsManager, Tree tree) {
         var category = new MDActionsCategory("", "");

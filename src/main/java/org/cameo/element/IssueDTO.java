@@ -1,6 +1,8 @@
 package org.cameo.element;
 
-
+/**
+ * DTO to map the Issue Object
+ */
 public class IssueDTO {
 
     private Integer id;

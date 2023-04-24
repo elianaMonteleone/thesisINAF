@@ -6,7 +6,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -18,51 +17,36 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.cameo.element.IssueDTO;
-import org.eclipse.emf.ecore.xml.type.internal.DataValue;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * @author Eliana
+ */
 
+
+/**
+ * Class to integrate Redmine's APIs
+ */
 public class RedmineApi {
 
     public RedmineApi() {
     }
 
-    public String getIssues() throws IOException {
 
-        String uri = "https://www.redmine.org/projects/redmine.json";
-        URL url = new URL(uri);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        String userCredentials = "admin:admin";
-        String basicAuth = "Basic " + DataValue.Base64.encode(userCredentials.getBytes());
-
-        connection.setRequestProperty("Authorization", basicAuth);
-        // Create an HTTP client object
-        HttpClient httpClient = HttpClients.createDefault();
-
-        // Initialize the client with the Redmine API endpoint
-        HttpGet httpGet = new HttpGet("http://redmine.example.com/issues.json");
-
-        // Make the HTTP request and obtain the response
-        HttpEntity responseEntity = httpClient.execute(httpGet).getEntity();
-
-        // Parse the response data
-        // Use the data as required
-        return EntityUtils.toString(responseEntity);
-    }
-
-
+    /**
+     * Testing method to retrieve the Subject of the issue
+     * @return subject of the issue
+     * @throws IOException
+     */
     public String getIssue() throws IOException {
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet("https://www.redmine.org/issues.json?/38480");
+        HttpGet httpGet = new HttpGet("https://www.redmine.org/issues.json");
         String auth = "admin:admin";
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes());
         String authHeader = "Basic " + new String(encodedAuth);
@@ -93,6 +77,11 @@ public class RedmineApi {
     }
 
 
+    /**
+     * API to get the description knowing the Id
+     * @return Description of the Issue by defined Id
+     */
+
     public String getIssueById(){
 
         String issueId = "38480";
@@ -109,13 +98,13 @@ public class RedmineApi {
             HttpResponse response = httpClient.execute(getRequest);
             HttpEntity entity = response.getEntity();
             String responseString = EntityUtils.toString(entity, "UTF-8");
-            Logger.getLogger(responseString + "valore della response string");
+            Logger.getLogger("Log of Response String: " +  responseString);
             Gson gson = new Gson();
             JsonObject jsonObject = gson.fromJson(responseString, JsonObject.class);
-            String issueSubject = jsonObject.get("issue").getAsJsonObject().get("subject").getAsString();
+            String issueSubject = jsonObject.get("issue").getAsJsonObject().get("description").getAsString();
             value = issueSubject;
-            System.out.println("Issue Subject: " + value);
-            Logger.getLogger(value + "valore della value string");
+            System.out.println("Issue Description: " + value);
+            Logger.getLogger("Log of description:"  + value);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -137,18 +126,12 @@ public class RedmineApi {
         String authHeader = "Basic " + new String(encodedAuth);
         postRequest.setHeader("Authorization", authHeader);
         postRequest.addHeader("accept", "application/json");
-       // String value = null;
         String responseString = "";
         try {
             List<IssueDTO> params = new ArrayList<IssueDTO>();
-            params.add(new IssueDTO(38483,2,"Redmine - Integration Rest API", 1, ""));
+            params.add(new IssueDTO((int) Math.random(),2,"Redmine - Integration Rest API", 1, "Post di prova"));
             HttpResponse response = httpClient.execute(postRequest);
             HttpEntity entity = response.getEntity();
-            /*String responseString = EntityUtils.toString(entity, "UTF-8");
-            Gson gson = new Gson();
-            JsonObject jsonObject = gson.fromJson(responseString, JsonObject.class);*/
-           // String issueSubject = jsonObject.get("issue").getAsJsonObject().get("subject").getAsString();
-            //value = issueSubject;
             InputStream content = entity.getContent();
             BufferedReader buffer = new BufferedReader(new InputStreamReader(content));
             String line;

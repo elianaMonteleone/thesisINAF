@@ -17,6 +17,12 @@ public class BrowserAction extends DefaultBrowserAction {
         super(id, name, null, null);
     }
 
+
+    /**
+     * Method to enable the creation of Ticket (class, profile and stereoptype) depending on
+     * the node of the tree presents in the Project (package or class)
+     * @param actionEvent
+     */
     public void actionPerformed(ActionEvent actionEvent) {
        var parent = MDDialogParentProvider.getProvider().getDialogParent(true);
         var dialog = new TicketDialog(parent);
@@ -25,12 +31,14 @@ public class BrowserAction extends DefaultBrowserAction {
         var selectedNode = tree.getSelectedNode();
 
         if (selectedNode != null) {
+            //if the selected node is type of Package, create the Class,Profile,Stereotype into it
             if (selectedNode.getUserObject() instanceof Package) {
                 var parentPackage = (Package) selectedNode.getUserObject();
                 var structure = new Structure();
                 structure.execute(parentPackage);
                 dialog.setVisible(true);
             }
+            //else the selected node is type of Block, create the Class,Profile,Stereotype into it
             else if(selectedNode.getUserObject() instanceof Class){
                 var parentPackage = (Class) selectedNode.getUserObject();
                 var structure = new Structure();

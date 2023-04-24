@@ -12,6 +12,10 @@ import java.awt.event.ActionListener;
  * @author Eliana
  */
 
+
+/**
+ * Class for the User Interface
+ */
 public class BaseTicketPanel extends JPanel {
     /**
      * Creates new form for Ticket

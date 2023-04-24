@@ -5,6 +5,13 @@ import org.cameo.action.BrowserConfiguration;
 import com.nomagic.magicdraw.actions.ActionsConfiguratorsManager;
 import com.nomagic.magicdraw.plugins.Plugin;
 
+/**
+ * @author Eliana
+ */
+
+/**
+ * Class for the creation of the Plugin in the browser context menu
+ */
 public class TicketingService extends Plugin {
     @Override
     public void init() {
