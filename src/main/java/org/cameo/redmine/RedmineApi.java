@@ -114,6 +114,10 @@ public class RedmineApi {
     }
 
 
+    /**
+     * TO IMPROVE: Post method, to create a new Issue
+     */
+
 
     public void postIssue(){
 
