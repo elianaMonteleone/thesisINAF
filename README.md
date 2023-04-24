@@ -1,7 +1,9 @@
 # thesisINAF
 
 For execution: 
-Download the Zip file or clone the repository and then on the CMD execute: mvn package. 
+Download the Zip file or clone the repository and then on the CMD execute: mvn package.
+
+
 Pay attention to see if you have installed maven ( to see, write mvn -version or mvn --v)
 
 If you want to Upload the Plugin into Cameo just do these steps: 
