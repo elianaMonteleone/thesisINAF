@@ -133,7 +133,7 @@ public class RedmineApi {
         String responseString = "";
         try {
             List<IssueDTO> params = new ArrayList<IssueDTO>();
-            params.add(new IssueDTO((int) Math.random(),2,"Redmine - Integration Rest API", 1, "Post di prova"));
+           // params.add(new IssueDTO((int) Math.random(),2,"Redmine - Integration Rest API", 1, "Post di prova"));
             HttpResponse response = httpClient.execute(postRequest);
             HttpEntity entity = response.getEntity();
             InputStream content = entity.getContent();
