@@ -13,6 +13,7 @@ import com.nomagic.uml2.ext.magicdraw.mdprofiles.Stereotype;
 import com.nomagic.uml2.impl.ElementsFactory;
 import org.cameo.redmine.RedmineApi;
 
+import java.io.IOException;
 
 
 /**
@@ -45,7 +46,7 @@ public class Structure {
      * @param packageTicket
      */
 
-    public void execute(Package packageTicket) {
+    public void execute(Package packageTicket) throws IOException {
         this.project = Application.getInstance().getProject();
         SessionManager.getInstance().createSession(project, "Create a ticket");
         Class mdClass = f.createClassInstance();
@@ -65,8 +66,9 @@ public class Structure {
         property.setType(stringType);
         property.setOwner(stereotype);
         RedmineApi api = new RedmineApi();
-
-        //CoreHelper.setComment(stereotype,api.postIssue());
+        api.createIssue("Proof of subject - Issue","Trying from Cameo", 4, "admin");
+        //CoreHelper.setComment(stereotype,api.doPost());
+        //api.postIssue();
 
 
         SessionManager.getInstance().closeSession(project);

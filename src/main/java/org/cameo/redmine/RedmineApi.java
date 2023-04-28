@@ -4,25 +4,40 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.taskadapter.redmineapi.RedmineManager;
+import com.taskadapter.redmineapi.RedmineManagerFactory;
+import com.taskadapter.redmineapi.bean.Issue;
+import com.taskadapter.redmineapi.bean.IssueFactory;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentProducer;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.EntityTemplate;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.cameo.element.IssueDTO;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+
+import java.io.*;
+import java.net.Authenticator;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.Scanner;
 import java.util.logging.Logger;
 
 /**
@@ -33,6 +48,8 @@ import java.util.logging.Logger;
 /**
  * Class to integrate Redmine's APIs
  */
+
+
 public class RedmineApi {
 
     public RedmineApi() {
@@ -119,42 +136,62 @@ public class RedmineApi {
      */
 
 
-    public void postIssue(){
-
-        String issueId = "38481";
-        String endPoint = "http://www.redmine.org/issues.json";
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpPost postRequest = new HttpPost(endPoint);
-        String auth = "admin:admin";
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes());
-        String authHeader = "Basic " + new String(encodedAuth);
-        postRequest.setHeader("Authorization", authHeader);
-        postRequest.addHeader("accept", "application/json");
-        String responseString = "";
+  /*  @PostMapping("/create/issues")
+    public ResponseEntity<Issue> createIssue(@RequestParam String username,
+                                             @RequestParam String password,
+                                             @RequestParam String projectId) {
         try {
-            List<IssueDTO> params = new ArrayList<IssueDTO>();
-           // params.add(new IssueDTO((int) Math.random(),2,"Redmine - Integration Rest API", 1, "Post di prova"));
-            HttpResponse response = httpClient.execute(postRequest);
-            HttpEntity entity = response.getEntity();
-            InputStream content = entity.getContent();
-            BufferedReader buffer = new BufferedReader(new InputStreamReader(content));
-            String line;
+            RedmineManager redmineManager = RedmineManagerFactory.createWithUserAuth("http://www.redmine.org/issues.json", username, password);
 
-            while ((line = buffer.readLine()) != null) {
-                responseString += line;
-            }
+            Issue issue = IssueFactory.create(Integer.valueOf(projectId));
+            issue.setAssigneeId(new Random().nextInt()); // Setting a random id
+            issue.setSubject("New issue");
+            issue.setDescription("This is a new issue created via API");
 
-            //release all resources held by the responseHttpEntity
-            EntityUtils.consume(entity);
+            Issue newIssue = redmineManager.getIssueManager().createIssue(issue);
 
+            return ResponseEntity.ok(newIssue);
         } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            Logger.getLogger(responseString + "responseString");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }*/
+
+
+    public void  createIssue(String subject, String description, int priority, String assignedUser) throws IOException {
+        String url = "http://www.redmine.org/issues";
+        String username = "admin";
+        String password = "admin";
+
+        HttpClient client = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost(url);
+        post.addHeader("Content-Type", "application/json");
+
+        StringEntity payload = new StringEntity(
+                "{" +
+                        "\"issue\": {" +
+                        "\"subject\": \"" + subject + "\"," +
+                        "\"description\": \"" + description + "\"," +
+                        "\"priority_id\": \"" + priority + "\"," +
+                        "\"assigned_to_id\": \"" + assignedUser + "\"" +
+                        "}" +
+                        "}"
+        );
+        post.setEntity(payload);
+
+        /*post.addHeader(BasicScheme.authenticate(
+                new UsernamePasswordCredentials(username, password), "UTF-8", false));*/
+        // add username and password in the Authorization header
+        String authHeader = "Basic " + Base64.encodeBase64String((username + ":" + password).getBytes());
+        post.setHeader("Authorization", authHeader);
+
+        HttpResponse response = client.execute(post);
+        int statusCode = response.getStatusLine().getStatusCode();
+        if (statusCode == 201) {
+            System.out.println("Issue created successfully!");
+        } else {
+            System.out.println("Error creating issue: " + response.getStatusLine().getReasonPhrase() + "Error code:" + response.getStatusLine().getStatusCode());
+        }
+
     }
-
-
-
 
 }

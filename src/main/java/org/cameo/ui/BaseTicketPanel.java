@@ -171,7 +171,6 @@ public class BaseTicketPanel extends JPanel {
 
     private void onOK() {
         JOptionPane.showConfirmDialog(null, "Do you want to save the ticket?");
-        api.postIssue();
     }
 
 

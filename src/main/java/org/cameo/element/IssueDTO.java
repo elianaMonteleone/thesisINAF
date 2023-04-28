@@ -1,13 +1,11 @@
 package org.cameo.element;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+
 
 /**
  * DTO to map the Issue Object
  */
-@Data
-@AllArgsConstructor
+
 public class IssueDTO {
 
     private int id;

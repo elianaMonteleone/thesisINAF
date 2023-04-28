@@ -7,6 +7,7 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Package;
 import org.cameo.element.Structure;
 import org.cameo.ui.TicketDialog;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 
 /**
  * @author Eliana
@@ -35,7 +36,11 @@ public class BrowserAction extends DefaultBrowserAction {
             if (selectedNode.getUserObject() instanceof Package) {
                 var parentPackage = (Package) selectedNode.getUserObject();
                 var structure = new Structure();
-                structure.execute(parentPackage);
+                try {
+                    structure.execute(parentPackage);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 dialog.setVisible(true);
             }
             //else the selected node is type of Block, create the Class,Profile,Stereotype into it
