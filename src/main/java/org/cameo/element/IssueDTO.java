@@ -8,15 +8,41 @@ package org.cameo.element;
 
 public class IssueDTO {
 
-    private int id;
     private String subject;
     private String description;
-    private int projectId;
-    private int trackerId;
     private int statusId;
     private int priorityId;
-    private int assigneeId;
 
+    public String getSubject() {
+        return subject;
+    }
 
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(int statusId) {
+        this.statusId = statusId;
+    }
+
+    public int getPriorityId() {
+        return priorityId;
+    }
+
+    public void setPriorityId(int priorityId) {
+        this.priorityId = priorityId;
+    }
 }
 

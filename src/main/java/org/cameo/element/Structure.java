@@ -12,6 +12,7 @@ import com.nomagic.uml2.ext.magicdraw.mdprofiles.Profile;
 import com.nomagic.uml2.ext.magicdraw.mdprofiles.Stereotype;
 import com.nomagic.uml2.impl.ElementsFactory;
 import org.cameo.redmine.RedmineApi;
+import org.cameo.ui.BaseTicketPanel;
 
 import java.io.IOException;
 
@@ -65,11 +66,7 @@ public class Structure {
 
         property.setType(stringType);
         property.setOwner(stereotype);
-        RedmineApi api = new RedmineApi();
-        //api.createIssue("Proof of subject - Issue","Trying from Cameo", 4, "elyMonteleone");
         //CoreHelper.setComment(stereotype,api.doPost());
-        //api.postIssue();
-       // api.createUser("gregoryCottone", "gregory.1995", "eliana.monteleone@virgilio.it");
 
 
         SessionManager.getInstance().closeSession(project);

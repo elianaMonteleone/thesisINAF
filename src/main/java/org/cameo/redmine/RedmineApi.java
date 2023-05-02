@@ -17,7 +17,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-
+import javax.swing.*;
 import java.io.*;
 import java.util.logging.Logger;
 
@@ -39,6 +39,7 @@ public class RedmineApi {
 
     /**
      * Testing method to retrieve the Subject of the issue
+     *
      * @return subject of the issue
      * @throws IOException
      */
@@ -60,14 +61,14 @@ public class RedmineApi {
             JsonNode root = mapper.readTree(json);
             JsonNode issue = root.get("issues");
 
-                // extract relevant information and use it in your Java app
-                subject = issue.get("subject").asText();
-                description = issue.get("description").asText();
-                status = issue.get("status").get("name").asText();
+            // extract relevant information and use it in your Java app
+            subject = issue.get("subject").asText();
+            description = issue.get("description").asText();
+            status = issue.get("status").get("name").asText();
 
-                System.out.println("Subject: " + subject);
-                System.out.println("Description: " + description);
-                System.out.println("Status: " + status);
+            System.out.println("Subject: " + subject);
+            System.out.println("Description: " + description);
+            System.out.println("Status: " + status);
             System.out.println("Ha letto l'issue");
             return subject;
 
@@ -77,93 +78,67 @@ public class RedmineApi {
 
     /**
      * API to get the description knowing the Id
+     *
      * @return Description of the Issue by defined Id
      */
 
-    public String getIssueById(){
+    public String getIssueById() {
 
-        String issueId = "38480";
+        String redmine_api_key = "76cb1a968ce607538b54ba25cb872db2dd2e4972";
+        String issueId = "1";
+        String url = "http://localhost:3000/projects/redmine-eliana/issues" + issueId + ".json";
         String endPoint = "http://www.redmine.org/issues/" + issueId + ".json";
         HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet getRequest = new HttpGet(endPoint);
-       String auth = "admin:admin";
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes());
-        String authHeader = "Basic " + new String(encodedAuth);
-        getRequest.setHeader("Authorization", authHeader);
+        HttpGet getRequest = new HttpGet(url);
+        //String auth = "admin:admin";
+        //byte[] encodedAuth = Base64.encodeBase64(auth.getBytes());
+        //String authHeader = "Basic " + new String(encodedAuth);
+        //getRequest.setHeader("Authorization", authHeader);
+        getRequest.addHeader("X-Redmine-API-Key", redmine_api_key);
         getRequest.addHeader("accept", "application/json");
         String value = null;
         try {
             HttpResponse response = httpClient.execute(getRequest);
             HttpEntity entity = response.getEntity();
             String responseString = EntityUtils.toString(entity, "UTF-8");
-            Logger.getLogger("Log of Response String: " +  responseString);
+            Logger.getLogger("Log of Response String: " + responseString);
             Gson gson = new Gson();
             JsonObject jsonObject = gson.fromJson(responseString, JsonObject.class);
             String issueSubject = jsonObject.get("issue").getAsJsonObject().get("description").getAsString();
             value = issueSubject;
             System.out.println("Issue Description: " + value);
-            Logger.getLogger("Log of description:"  + value);
+            Logger.getLogger("Log of description:" + value);
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             return value;
         }
     }
 
 
     /**
-     * TO IMPROVE: Post method, to create a new Issue
+     * POST API to create a new Issue
+     * @param subject
+     * @param area
+     * @throws IOException
      */
 
-
-  /*  @PostMapping("/create/issues")
-    public ResponseEntity<Issue> createIssue(@RequestParam String username,
-                                             @RequestParam String password,
-                                             @RequestParam String projectId) {
-        try {
-            RedmineManager redmineManager = RedmineManagerFactory.createWithUserAuth("http://www.redmine.org/issues.json", username, password);
-
-            Issue issue = IssueFactory.create(Integer.valueOf(projectId));
-            issue.setAssigneeId(new Random().nextInt()); // Setting a random id
-            issue.setSubject("New issue");
-            issue.setDescription("This is a new issue created via API");
-
-            Issue newIssue = redmineManager.getIssueManager().createIssue(issue);
-
-            return ResponseEntity.ok(newIssue);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }*/
-
-
-    public void  createIssue(String subject, String description, int priority, String assignedUser) throws IOException {
-        String url = "http://www.redmine.org/issues";
-        String username = "admin";
-        String password = "admin";
+    public void createIssue(JTextField subject, JTextArea area) throws IOException {
+        String url = "http://localhost:3000/projects/redmine-eliana/issues.json";
+        String redmine_api_key = "76cb1a968ce607538b54ba25cb872db2dd2e4972";
 
         HttpClient client = HttpClientBuilder.create().build();
         HttpPost post = new HttpPost(url);
         post.addHeader("Content-Type", "application/json");
+        post.addHeader("X-Redmine-API-Key", redmine_api_key);
 
-        StringEntity payload = new StringEntity(
-                "{" +
-                        "\"issue\": {" +
-                        "\"subject\": \"" + subject + "\"," +
-                        "\"description\": \"" + description + "\"," +
-                        "\"priority_id\": \"" + priority + "\"," +
-                        "\"assigned_to_id\": \"" + assignedUser + "\"" +
-                        "}" +
-                        "}"
-        );
-        post.setEntity(payload);
+        String title = subject.getText();
+        String description = area.getText();
+        String json = "{\"issue\": {\"project_id\":1,\"subject\":\"" + title + "\",\"description\":  \"" + description + "\"," + "\"priority_id\":2,\"tracker_id\":3}}";
 
-        /*post.addHeader(BasicScheme.authenticate(
-                new UsernamePasswordCredentials(username, password), "UTF-8", false));*/
-        // add username and password in the Authorization header
-        String authHeader = "Basic " + Base64.encodeBase64String((username + ":" + password).getBytes());
-        post.setHeader("Authorization", authHeader);
+        StringEntity entity = new StringEntity(json);
+        post.setEntity(entity);
+
 
         HttpResponse response = client.execute(post);
         int statusCode = response.getStatusLine().getStatusCode();
@@ -175,6 +150,6 @@ public class RedmineApi {
 
     }
 
+    }
 
 
-}
