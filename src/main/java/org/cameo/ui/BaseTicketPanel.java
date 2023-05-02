@@ -36,7 +36,7 @@ public class BaseTicketPanel extends JPanel {
         taskName = new javax.swing.JLabel();
         taskNameField = new javax.swing.JTextField();
         description = new javax.swing.JLabel();
-        descriptionArea = new javax.swing.JTextArea();
+        descriptionArea = new javax.swing.JTextArea(10,10);
         jPanel1 = new javax.swing.JPanel();
         buttonPanel = new javax.swing.JPanel();
         cancelButton = new javax.swing.JButton();

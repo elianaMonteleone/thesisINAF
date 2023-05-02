@@ -46,7 +46,7 @@ public class Structure {
      * @param packageTicket
      */
 
-    public void execute(Package packageTicket) throws IOException {
+    public void execute(Package packageTicket) throws IOException{
         this.project = Application.getInstance().getProject();
         SessionManager.getInstance().createSession(project, "Create a ticket");
         Class mdClass = f.createClassInstance();
@@ -66,9 +66,10 @@ public class Structure {
         property.setType(stringType);
         property.setOwner(stereotype);
         RedmineApi api = new RedmineApi();
-        api.createIssue("Proof of subject - Issue","Trying from Cameo", 4, "admin");
+        //api.createIssue("Proof of subject - Issue","Trying from Cameo", 4, "elyMonteleone");
         //CoreHelper.setComment(stereotype,api.doPost());
         //api.postIssue();
+       // api.createUser("gregoryCottone", "gregory.1995", "eliana.monteleone@virgilio.it");
 
 
         SessionManager.getInstance().closeSession(project);
