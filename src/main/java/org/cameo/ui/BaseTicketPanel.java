@@ -1,6 +1,7 @@
 package org.cameo.ui;
 
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import org.cameo.redmine.RedmineApi;
 
 import javax.swing.*;
@@ -175,13 +176,12 @@ public class BaseTicketPanel extends JPanel {
 
     private void onOK() throws IOException {
         JOptionPane.showConfirmDialog(null, "Do you want to save the ticket?");
-        api.createIssue(taskNameField ,descriptionArea);
+            api.createIssue(taskNameField, descriptionArea);
     }
 
 
     private void onCancel() {
-        JOptionPane.showConfirmDialog(null, "Do you want to close the operation?");
-
+     JOptionPane.showConfirmDialog(null, "Do you want to close the operation?");
     }
 
 

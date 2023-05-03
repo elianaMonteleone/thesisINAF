@@ -86,14 +86,9 @@ public class RedmineApi {
 
         String redmine_api_key = "76cb1a968ce607538b54ba25cb872db2dd2e4972";
         String issueId = "1";
-        String url = "http://localhost:3000/projects/redmine-eliana/issues" + issueId + ".json";
-        String endPoint = "http://www.redmine.org/issues/" + issueId + ".json";
+        String url = "http://localhost:3000/issues/" + issueId + ".json";
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet getRequest = new HttpGet(url);
-        //String auth = "admin:admin";
-        //byte[] encodedAuth = Base64.encodeBase64(auth.getBytes());
-        //String authHeader = "Basic " + new String(encodedAuth);
-        //getRequest.setHeader("Authorization", authHeader);
         getRequest.addHeader("X-Redmine-API-Key", redmine_api_key);
         getRequest.addHeader("accept", "application/json");
         String value = null;

@@ -66,7 +66,8 @@ public class Structure {
 
         property.setType(stringType);
         property.setOwner(stereotype);
-        //CoreHelper.setComment(stereotype,api.doPost());
+        RedmineApi api = new RedmineApi();
+        CoreHelper.setComment(stereotype,api.getIssueById());
 
 
         SessionManager.getInstance().closeSession(project);
