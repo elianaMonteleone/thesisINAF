@@ -4,21 +4,32 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.taskadapter.redmineapi.RedmineException;
+import com.taskadapter.redmineapi.RedmineManager;
+import com.taskadapter.redmineapi.RedmineManagerFactory;
+import com.taskadapter.redmineapi.bean.Issue;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.cameo.element.RedmineIssue;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import javax.swing.*;
 import java.io.*;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -75,6 +86,23 @@ public class RedmineApi {
         }
     }
 
+    public void getListOfIssue() {
+        String redmine_api_key = "76cb1a968ce607538b54ba25cb872db2dd2e4972";
+        String url = "http://localhost:3000/issues.json?sort=updated_on%3Ades";
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet getRequest = new HttpGet(url);
+        getRequest.addHeader("X-Redmine-API-Key", redmine_api_key);
+        getRequest.addHeader("accept", "application/json");
+        List<String> issues = new ArrayList<>();
+        try {
+            HttpResponse response = httpClient.execute(getRequest);
+            String responseString = EntityUtils.toString(response.getEntity());
+            System.out.println(responseString);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * API to get the description knowing the Id
@@ -97,9 +125,9 @@ public class RedmineApi {
             HttpEntity entity = response.getEntity();
             String responseString = EntityUtils.toString(entity, "UTF-8");
             Logger.getLogger("Log of Response String: " + responseString);
-            Gson gson = new Gson();
+           Gson gson = new Gson();
             JsonObject jsonObject = gson.fromJson(responseString, JsonObject.class);
-            String issueSubject = jsonObject.get("issue").getAsJsonObject().get("description").getAsString();
+            String issueSubject = jsonObject.get("issues").getAsJsonObject().get("description").getAsString();
             value = issueSubject;
             System.out.println("Issue Description: " + value);
             Logger.getLogger("Log of description:" + value);
@@ -109,6 +137,39 @@ public class RedmineApi {
             return value;
         }
     }
+
+
+    public String getIssueFromList(){
+        String redmine_api_key = "76cb1a968ce607538b54ba25cb872db2dd2e4972";
+        String url = "http://localhost:3000/issues.json?sort=id,desc";
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet getRequest = new HttpGet(url);
+        getRequest.addHeader("X-Redmine-API-Key", redmine_api_key);
+        getRequest.addHeader("accept", "application/json");
+        String value = null;
+        try {
+            HttpResponse response = httpClient.execute(getRequest);
+            HttpEntity entity = response.getEntity();
+            String responseString = EntityUtils.toString(entity, "UTF-8");
+            Logger.getLogger("Log of Response String: " + responseString);
+
+            JSONObject json = new JSONObject(responseString);
+            JSONArray issues = json.getJSONArray("issues");
+
+            for (int i = 0; i < issues.length(); i++) {
+                JSONObject issue = issues.getJSONObject(i);
+                String description = issue.getString("description");
+                value = description;
+            }
+            System.out.println("Issue Description: " + value);
+            Logger.getLogger("Log of description:" + value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            return value;
+        }
+    }
+
 
 
     /**
@@ -134,7 +195,6 @@ public class RedmineApi {
         StringEntity entity = new StringEntity(json);
         post.setEntity(entity);
 
-
         HttpResponse response = client.execute(post);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode == 201) {
@@ -144,6 +204,10 @@ public class RedmineApi {
         }
 
     }
+
+
+    
+    
 
     }
 
