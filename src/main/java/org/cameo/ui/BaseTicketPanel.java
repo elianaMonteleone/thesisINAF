@@ -1,7 +1,6 @@
 package org.cameo.ui;
 
 
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.nomagic.uml2.ext.jmi.helpers.CoreHelper;
 import org.cameo.element.Structure;
 import org.cameo.redmine.RedmineApi;
