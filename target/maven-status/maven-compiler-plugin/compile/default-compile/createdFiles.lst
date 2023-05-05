@@ -7,8 +7,6 @@ org\cameo\element\Structure.class
 org\cameo\TicketingService.class
 org\cameo\ui\BaseTicketPanel$3.class
 org\cameo\redmine\RedmineApi.class
-org\cameo\element\IssueDTO.class
 org\cameo\ui\BaseTicketPanel.class
 org\cameo\ui\BaseTicketPanel$5.class
-org\cameo\element\RedmineIssue.class
 org\cameo\ui\BaseTicketPanel$4.class

@@ -212,7 +212,7 @@ public class BaseTicketPanel extends JPanel {
                 public void run() {
                     CoreHelper.setComment(Structure.stereotype, api.getIssueFromList());
                 }
-            }, 4, TimeUnit.SECONDS);
+            }, 3, TimeUnit.SECONDS);
             exec.shutdown();
             window.dispose();
 
@@ -226,7 +226,7 @@ public class BaseTicketPanel extends JPanel {
      */
     private void onCancel() {
         Window window = SwingUtilities.getWindowAncestor(this);
-        if(JOptionPane.showConfirmDialog(null, "Do you want to close the operation?") == JOptionPane.OK_CANCEL_OPTION){
+        if(JOptionPane.showConfirmDialog(null, "Do you want to close the operation?") == JOptionPane.OK_OPTION){
             window.dispose();
         }
     }
