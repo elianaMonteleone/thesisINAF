@@ -48,97 +48,12 @@ public class RedmineApi {
     }
 
 
-    /**
-     * Testing method to retrieve the Subject of the issue
-     *
-     * @return subject of the issue
-     * @throws IOException
-     */
-    public String getIssue() throws IOException {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet("https://www.redmine.org/issues.json");
-        String auth = "admin:admin";
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes());
-        String authHeader = "Basic " + new String(encodedAuth);
-        httpGet.setHeader("Authorization", authHeader);
-        String subject;
-        String description;
-        String status;
-
-        // send HTTP request and parse JSON response
-        try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
-            String json = EntityUtils.toString(response.getEntity(), ContentType.APPLICATION_JSON.getCharset());
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode root = mapper.readTree(json);
-            JsonNode issue = root.get("issues");
-
-            // extract relevant information and use it in your Java app
-            subject = issue.get("subject").asText();
-            description = issue.get("description").asText();
-            status = issue.get("status").get("name").asText();
-
-            System.out.println("Subject: " + subject);
-            System.out.println("Description: " + description);
-            System.out.println("Status: " + status);
-            System.out.println("Ha letto l'issue");
-            return subject;
-
-        }
-    }
-
-    public void getListOfIssue() {
-        String redmine_api_key = "76cb1a968ce607538b54ba25cb872db2dd2e4972";
-        String url = "http://localhost:3000/issues.json?sort=updated_on%3Ades";
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet getRequest = new HttpGet(url);
-        getRequest.addHeader("X-Redmine-API-Key", redmine_api_key);
-        getRequest.addHeader("accept", "application/json");
-        List<String> issues = new ArrayList<>();
-        try {
-            HttpResponse response = httpClient.execute(getRequest);
-            String responseString = EntityUtils.toString(response.getEntity());
-            System.out.println(responseString);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     /**
-     * API to get the description knowing the Id
-     *
-     * @return Description of the Issue by defined Id
+     * This API will show always the latest created issue
+     * Sort by ID and Order by Updated_On values
+     * @return description of the issue
      */
-
-    public String getIssueById() {
-
-        String redmine_api_key = "76cb1a968ce607538b54ba25cb872db2dd2e4972";
-        String issueId = "1";
-        String url = "http://localhost:3000/issues/" + issueId + ".json";
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet getRequest = new HttpGet(url);
-        getRequest.addHeader("X-Redmine-API-Key", redmine_api_key);
-        getRequest.addHeader("accept", "application/json");
-        String value = null;
-        try {
-            HttpResponse response = httpClient.execute(getRequest);
-            HttpEntity entity = response.getEntity();
-            String responseString = EntityUtils.toString(entity, "UTF-8");
-            Logger.getLogger("Log of Response String: " + responseString);
-           Gson gson = new Gson();
-            JsonObject jsonObject = gson.fromJson(responseString, JsonObject.class);
-            String issueSubject = jsonObject.get("issues").getAsJsonObject().get("description").getAsString();
-            value = issueSubject;
-            System.out.println("Issue Description: " + value);
-            Logger.getLogger("Log of description:" + value);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            return value;
-        }
-    }
-
-
     public String getIssueFromList(){
         String redmine_api_key = "76cb1a968ce607538b54ba25cb872db2dd2e4972";
         String url = "http://localhost:3000/issues.json?sort=id,order_by=updated_on,asc";

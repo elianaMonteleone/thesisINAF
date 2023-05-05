@@ -188,6 +188,13 @@ public class BaseTicketPanel extends JPanel {
         );
     }
 
+    /**
+     * Using ScheduledExecutorService that can schedule commands to run after a given delay for API's call
+     * POST -> createIssue()
+     * GET -> getIssueFromList() and save the result into Documentation/Comments in Cameo's Stereotype
+     * @throws IOException
+     * @throws InterruptedException
+     */
     private void onOK() throws IOException, InterruptedException {
         final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
         Window window = SwingUtilities.getWindowAncestor(this);
@@ -215,13 +222,19 @@ public class BaseTicketPanel extends JPanel {
 
     }
 
-
+    /**
+     * Method when pressing "Cancel" button
+     */
     private void onCancel() {
         Window window = SwingUtilities.getWindowAncestor(this);
         if(JOptionPane.showConfirmDialog(null, "Do you want to close the operation?") == JOptionPane.OK_CANCEL_OPTION){
             window.dispose();
         }
     }
+
+    /**
+     * Method when pressing "Show Ticket" button, to show the latest ticket without creating a new one
+     */
 
     private void showIssue(){
         Window window = SwingUtilities.getWindowAncestor(this);
