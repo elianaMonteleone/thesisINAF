@@ -141,7 +141,7 @@ public class RedmineApi {
 
     public String getIssueFromList(){
         String redmine_api_key = "76cb1a968ce607538b54ba25cb872db2dd2e4972";
-        String url = "http://localhost:3000/issues.json?sort=id,desc";
+        String url = "http://localhost:3000/issues.json?sort=id,order_by=updated_on,asc";
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet getRequest = new HttpGet(url);
         getRequest.addHeader("X-Redmine-API-Key", redmine_api_key);
@@ -161,8 +161,12 @@ public class RedmineApi {
                 String description = issue.getString("description");
                 value = description;
             }
-            System.out.println("Issue Description: " + value);
-            Logger.getLogger("Log of description:" + value);
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == 201) {
+                System.out.println("Issue found successfully!");
+            } else {
+                System.out.println("Error retrieving issue: " + response.getStatusLine().getReasonPhrase() + "Error code:" + response.getStatusLine().getStatusCode());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

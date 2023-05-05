@@ -2,6 +2,8 @@ package org.cameo.ui;
 
 
 import com.fasterxml.jackson.databind.ser.Serializers;
+import com.nomagic.uml2.ext.jmi.helpers.CoreHelper;
+import org.cameo.element.Structure;
 import org.cameo.redmine.RedmineApi;
 
 import javax.swing.*;
@@ -9,6 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.concurrent.*;
 
 /**
  * @author Eliana
@@ -44,6 +47,7 @@ public class BaseTicketPanel extends JPanel {
         cancelButton = new JButton();
         buttonOk = new JButton();
         api = new RedmineApi();
+        showTicket = new JButton();
 
         titlePanel.setBackground(new Color(255, 255, 255));
 
@@ -120,6 +124,13 @@ public class BaseTicketPanel extends JPanel {
                                        }
         );
 
+        showTicket.setText("Show Ticket");
+        showTicket.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                showIssue();
+            }
+        });
 
         buttonOk.setText("OK");
         buttonOk.addActionListener(new ActionListener() {
@@ -127,7 +138,7 @@ public class BaseTicketPanel extends JPanel {
                                        public void actionPerformed(ActionEvent actionEvent) {
                                            try {
                                                onOK();
-                                           } catch (IOException e) {
+                                           } catch (IOException | InterruptedException e) {
                                                e.printStackTrace();
                                            }
                                        }
@@ -140,6 +151,8 @@ public class BaseTicketPanel extends JPanel {
                 buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(buttonPanelLayout.createSequentialGroup()
                                 .addContainerGap()
+                                .addComponent(showTicket)
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(buttonOk)
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(cancelButton)
@@ -151,7 +164,8 @@ public class BaseTicketPanel extends JPanel {
                 buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                         .addGroup(buttonPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                 .addComponent(cancelButton)
-                                .addComponent(buttonOk))
+                                .addComponent(buttonOk)
+                                .addComponent(showTicket))
         );
 
         GroupLayout layout = new GroupLayout(this);
@@ -174,16 +188,48 @@ public class BaseTicketPanel extends JPanel {
         );
     }
 
-    private void onOK() throws IOException {
-        JOptionPane.showConfirmDialog(null, "Do you want to save the ticket?");
-            api.createIssue(taskNameField, descriptionArea);
+    private void onOK() throws IOException, InterruptedException {
+        final ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+        Window window = SwingUtilities.getWindowAncestor(this);
+        if(JOptionPane.showConfirmDialog(null, "Do you want to save the ticket?") == JOptionPane.OK_OPTION) {
+            exec.schedule(new Runnable() {
+                public void run() {
+                    try {
+                        api.createIssue(taskNameField, descriptionArea);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, 2, TimeUnit.SECONDS);
+
+            exec.schedule(new Runnable() {
+                public void run() {
+                    CoreHelper.setComment(Structure.stereotype, api.getIssueFromList());
+                }
+            }, 4, TimeUnit.SECONDS);
+            exec.shutdown();
+            window.dispose();
+
+        }
+
+
     }
 
 
     private void onCancel() {
-     JOptionPane.showConfirmDialog(null, "Do you want to close the operation?");
+        Window window = SwingUtilities.getWindowAncestor(this);
+        if(JOptionPane.showConfirmDialog(null, "Do you want to close the operation?") == JOptionPane.OK_CANCEL_OPTION){
+            window.dispose();
+        }
     }
 
+    private void showIssue(){
+        Window window = SwingUtilities.getWindowAncestor(this);
+        if(JOptionPane.showConfirmDialog(null, "Do you want to see the ticket?") == JOptionPane.OK_OPTION) {
+            CoreHelper.setComment(Structure.stereotype, api.getIssueFromList());
+        }
+        window.dispose();
+    }
 
     private JPanel buttonPanel;
     protected JButton cancelButton;
@@ -198,6 +244,7 @@ public class BaseTicketPanel extends JPanel {
     private JPanel titlePanel;
     protected JButton buttonOk;
     private RedmineApi api;
+    private JButton showTicket;
 
 
 }

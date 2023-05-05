@@ -34,6 +34,7 @@ public class Structure {
 
     private Project project;
     private ElementsFactory f;
+    public static Stereotype stereotype;
 
     public Structure() {
         this.project = Application.getInstance().getProject();
@@ -56,9 +57,9 @@ public class Structure {
         Profile profile = f.createProfileInstance();
         profile.setName("My Ticket");
         profile.setOwner(packageTicket);
-        Stereotype stereotype = f.createStereotypeInstance();
-        stereotype.setName("Ticket");
-        stereotype.setOwner(profile);
+        this.stereotype = f.createStereotypeInstance();
+        this.stereotype.setName("Ticket");
+        this.stereotype.setOwner(profile);
         Property property = f.createPropertyInstance();
         property.setName("Description: ");
         var stringType = (Type) Finder.byQualifiedName()
@@ -66,8 +67,8 @@ public class Structure {
 
         property.setType(stringType);
         property.setOwner(stereotype);
-        RedmineApi api = new RedmineApi();
-        CoreHelper.setComment(stereotype,api.getIssueFromList());
+        /*RedmineApi api = new RedmineApi();
+        CoreHelper.setComment(stereotype,api.getIssueFromList());*/
         SessionManager.getInstance().closeSession(project);
     }
 
@@ -82,9 +83,9 @@ public class Structure {
         Class mdClass = f.createClassInstance();
         mdClass.setOwner(element);
         mdClass.setName("TicketClass");
-        Stereotype stereotype = f.createStereotypeInstance();
-        stereotype.setName("Ticket");
-        stereotype.setOwner(element);
+        this.stereotype = f.createStereotypeInstance();
+        this.stereotype.setName("Ticket");
+        this.stereotype.setOwner(element);
         Property property = f.createPropertyInstance();
         property.setName("Description: ");
         var stringType = (Type) Finder.byQualifiedName()
@@ -92,11 +93,10 @@ public class Structure {
 
         property.setType(stringType);
         property.setOwner(stereotype);
-
-        RedmineApi api = new RedmineApi();
-        CoreHelper.setComment(stereotype,api.getIssueById());
         SessionManager.getInstance().closeSession(project);
     }
+
+
 
 
 
