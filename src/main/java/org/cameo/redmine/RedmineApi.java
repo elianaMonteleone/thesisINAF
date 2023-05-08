@@ -9,6 +9,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.swing.*;
@@ -40,10 +41,17 @@ public class RedmineApi {
     public String getIssueFromList(){
         String redmine_api_key = "76cb1a968ce607538b54ba25cb872db2dd2e4972";
         String url = "http://localhost:3000/issues.json?sort=id,order_by=updated_on,asc";
+        String urlTwo = "http://localhost:3000/issues/" + returnIdFromIssue() + ".json?include=journals";
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet getRequest = new HttpGet(url);
         getRequest.addHeader("X-Redmine-API-Key", redmine_api_key);
         getRequest.addHeader("accept", "application/json");
+
+        //second get of issue's changes
+        HttpGet get = new HttpGet(urlTwo);
+        get.addHeader("X-Redmine-API-Key", redmine_api_key);
+        get.addHeader("accept", "application/json");
+
         String value = null;
         try {
             HttpResponse response = httpClient.execute(getRequest);
@@ -51,14 +59,26 @@ public class RedmineApi {
             String responseString = EntityUtils.toString(entity, "UTF-8");
             Logger.getLogger("Log of Response String: " + responseString);
 
+            //second get of issue's changes
+            HttpResponse resp = httpClient.execute(get);
+            HttpEntity ent = resp.getEntity();
+            String responseNotes = EntityUtils.toString(ent, "UTF-8");
+
             JSONObject json = new JSONObject(responseString);
             JSONArray issues = json.getJSONArray("issues");
 
+
             for (int i = 0; i < issues.length(); i++) {
-                JSONObject issue = issues.getJSONObject(i);
-                String description = issue.getString("description");
-                value = description;
-            }
+                    JSONObject issue = issues.getJSONObject(i);
+                    String description = issue.getString("description");
+                    if(!responseNotes.isEmpty()) {
+                        value = description + "\n " + "\n" + "Changes of the ISSUE: " + " " + getNotes(responseNotes);
+                    } else {
+                        value = description;
+                    }
+
+                }
+
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == 201) {
                 System.out.println("Issue found successfully!");
@@ -72,6 +92,65 @@ public class RedmineApi {
         }
     }
 
+
+    /**
+     *
+     * @param response
+     * @return the notes added changes to issue
+     * @throws JSONException
+     */
+
+    public String getNotes(String response) throws JSONException {
+        String notes = "";
+        JSONObject jsonResponse = new JSONObject(response);
+        JSONArray journals = jsonResponse.getJSONObject("issue").getJSONArray("journals");
+
+        for (int i = 0; i < journals.length(); i++) {
+            JSONObject journal = journals.getJSONObject(i);
+            notes = journal.getString("notes");
+            System.out.println("Changes from issue" + notes);
+        }
+        return notes;
+    }
+
+    /**
+     * GET to retrieve the ID of the issue
+     * @return
+     */
+    public String returnIdFromIssue(){
+        String redmine_api_key = "76cb1a968ce607538b54ba25cb872db2dd2e4972";
+        String url = "http://localhost:3000/issues.json?sort=id,order_by=updated_on,asc";
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet getRequest = new HttpGet(url);
+        getRequest.addHeader("X-Redmine-API-Key", redmine_api_key);
+        getRequest.addHeader("accept", "application/json");
+        String value = "";
+        try {
+            HttpResponse response = httpClient.execute(getRequest);
+            HttpEntity entity = response.getEntity();
+            String responseString = EntityUtils.toString(entity, "UTF-8");
+
+            JSONObject json = new JSONObject(responseString);
+            JSONArray issues = json.getJSONArray("issues");
+
+            for (int i = 0; i < issues.length(); i++) {
+                JSONObject issue = issues.getJSONObject(i);
+                int id = issue.getInt("id");
+                value = String.valueOf(id);
+            }
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == 201) {
+                System.out.println("Issue's id found successfully!");
+            } else {
+                System.out.println("Error retrieving issue's id: " + response.getStatusLine().getReasonPhrase() + "Error code:" + response.getStatusLine().getStatusCode());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            return value;
+        }
+
+    }
 
 
     /**
