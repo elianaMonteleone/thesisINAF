@@ -8,12 +8,15 @@ import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.cameo.element.Issue;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.swing.*;
 import java.io.*;
+import java.sql.Date;
+
 import java.util.logging.Logger;
 
 /**
@@ -120,7 +123,7 @@ public class RedmineApi {
      * @throws IOException
      */
 
-    public void createIssue(JTextField subject, JTextArea area) throws IOException {
+    public void createIssue(JTextField subject, JTextArea area, JComboBox priority, JComboBox tracker) throws IOException {
         String url = "http://localhost:3000/projects/redmine-eliana/issues.json";
         String redmine_api_key = "76cb1a968ce607538b54ba25cb872db2dd2e4972";
 
@@ -131,7 +134,7 @@ public class RedmineApi {
 
         String title = subject.getText();
         String description = area.getText();
-        String json = "{\"issue\": {\"project_id\":1,\"subject\":\"" + title + "\",\"description\":  \"" + description + "\"," + "\"priority_id\":2,\"tracker_id\":3}}";
+        String json = "{\"issue\": {\"project_id\":1,\"subject\":\"" + title + "\",\"description\":  \"" + description + "\"," + "\"priority_id\": \"" + priority.getSelectedItem() + "\",\"tracker_id\":\"" + tracker.getSelectedItem() + "\" }}";
 
         StringEntity entity = new StringEntity(json);
         post.setEntity(entity);
@@ -146,71 +149,41 @@ public class RedmineApi {
 
     }
 
-
     /**
-     * API to get the status of the Ticket
+     * GET to obtain the properties of the ISSUE
      * @return
      */
 
-    public String getStatus(){
+
+    public Issue getProperties(){
         String redmine_api_key = "76cb1a968ce607538b54ba25cb872db2dd2e4972";
-        String url = "http://localhost:3000/issues/" + returnIdFromIssue() +".json?";
+        String url = "http://localhost:3000/issues/" + returnIdFromIssue() +".json?/order_by=updated_on,asc";
         HttpClient httpClient = HttpClientBuilder.create().build();
         HttpGet getRequest = new HttpGet(url);
         getRequest.addHeader("X-Redmine-API-Key", redmine_api_key);
         getRequest.addHeader("accept", "application/json");
-        String issueStatus = "";
+        Issue issue = new Issue();
         try {
             HttpResponse response = httpClient.execute(getRequest);
             HttpEntity entity = response.getEntity();
             String responseString = EntityUtils.toString(entity, "UTF-8");
 
-            issueStatus = new JSONObject(responseString).getJSONObject("issue").getJSONObject("status").getString("name");
-
+            issue.setAuthor(new JSONObject(responseString).getJSONObject("issue").getJSONObject("author").getString("name"));
+            issue.setStatus(new JSONObject(responseString).getJSONObject("issue").getJSONObject("status").getString("name"));
+            issue.setSubject(new JSONObject(responseString).getJSONObject("issue").getString("subject"));
+            issue.setPriority(new JSONObject(responseString).getJSONObject("issue").getJSONObject("priority").getString("name"));
+            issue.setTracker(new JSONObject(responseString).getJSONObject("issue").getJSONObject("tracker").getString("name"));
+            issue.setStartDate(Date.valueOf(new JSONObject(responseString).getJSONObject("issue").getString("start_date")));
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == 201) {
                 System.out.println("Issue's id found successfully!");
             } else {
-                System.out.println("Error retrieving issue's status: " + response.getStatusLine().getReasonPhrase() + "Error code:" + response.getStatusLine().getStatusCode());
+                System.out.println("Error retrieving ticket's properties: " + response.getStatusLine().getReasonPhrase() + "Error code:" + response.getStatusLine().getStatusCode());
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            return issueStatus;
-        }
-
-    }
-
-
-    /**
-     * API to get the name of the Issue's author
-     * @return
-     */
-    public String getAuthor(){
-        String redmine_api_key = "76cb1a968ce607538b54ba25cb872db2dd2e4972";
-        String url = "http://localhost:3000/issues/" + returnIdFromIssue() +".json?";
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpGet getRequest = new HttpGet(url);
-        getRequest.addHeader("X-Redmine-API-Key", redmine_api_key);
-        getRequest.addHeader("accept", "application/json");
-        String issueAuthor = "";
-        try {
-            HttpResponse response = httpClient.execute(getRequest);
-            HttpEntity entity = response.getEntity();
-            String responseString = EntityUtils.toString(entity, "UTF-8");
-
-            issueAuthor = new JSONObject(responseString).getJSONObject("issue").getJSONObject("author").getString("name");
-
-            int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode == 201) {
-                System.out.println("Issue's id found successfully!");
-            } else {
-                System.out.println("Error retrieving issue's author: " + response.getStatusLine().getReasonPhrase() + "Error code:" + response.getStatusLine().getStatusCode());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            return issueAuthor;
+            return issue;
         }
 
     }

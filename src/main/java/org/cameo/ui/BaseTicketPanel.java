@@ -2,6 +2,8 @@ package org.cameo.ui;
 
 
 import com.nomagic.uml2.ext.jmi.helpers.CoreHelper;
+import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Property;
+import org.cameo.element.Issue;
 import org.cameo.element.Structure;
 import org.cameo.redmine.RedmineApi;
 
@@ -10,6 +12,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 
 /**
@@ -47,6 +51,12 @@ public class BaseTicketPanel extends JPanel {
         buttonOk = new JButton();
         api = new RedmineApi();
         showTicket = new JButton();
+        String[] priorities = {"1 - Low", "2 - Normal", "3 - High", "4 - Urgent" , "5 - Immediate"};
+        priorityBox = new JComboBox(priorities);
+        priority = new JLabel();
+        String [] trackers = {"1 - Anomaly", "2 - Evolution", "3 - Assistance"};
+        trackerBox = new JComboBox(trackers);
+        tracker = new JLabel();
 
         titlePanel.setBackground(new Color(255, 255, 255));
 
@@ -54,6 +64,7 @@ public class BaseTicketPanel extends JPanel {
         jLabel1.setText("Create a new ticket");
 
         jLabel2.setText("Give name and description for your new ticket");
+
 
         GroupLayout titlePanelLayout = new GroupLayout(titlePanel);
         titlePanel.setLayout(titlePanelLayout);
@@ -80,6 +91,10 @@ public class BaseTicketPanel extends JPanel {
 
         description.setText("Description:");
 
+        priority.setText("Priority");
+
+        tracker.setText("Tracker");
+
         GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
         contentPanel.setLayout(contentPanelLayout);
         contentPanelLayout.setHorizontalGroup(
@@ -95,7 +110,16 @@ public class BaseTicketPanel extends JPanel {
                                         .addGroup(contentPanelLayout.createSequentialGroup()
                                                 .addComponent(description)
                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(descriptionArea, 300, GroupLayout.PREFERRED_SIZE, 300)))
+                                                .addComponent(descriptionArea, 300, GroupLayout.PREFERRED_SIZE, 300))
+                                        .addGroup(contentPanelLayout.createSequentialGroup()
+                                                .addComponent(priority)
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(priorityBox))
+                                        .addGroup(contentPanelLayout.createSequentialGroup()
+                                                .addComponent(tracker)
+                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(trackerBox))
+                                )
                                 .addContainerGap())
         );
         contentPanelLayout.setVerticalGroup(
@@ -109,6 +133,14 @@ public class BaseTicketPanel extends JPanel {
                                 .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                         .addComponent(description)
                                         .addComponent(descriptionArea, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                        .addComponent(priority)
+                                        .addComponent(priorityBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                        .addComponent(tracker)
+                                        .addComponent(trackerBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jPanel1, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -201,7 +233,7 @@ public class BaseTicketPanel extends JPanel {
             exec.schedule(new Runnable() {
                 public void run() {
                     try {
-                        api.createIssue(taskNameField, descriptionArea);
+                        api.createIssue(taskNameField, descriptionArea, priorityBox, trackerBox);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -211,6 +243,26 @@ public class BaseTicketPanel extends JPanel {
             exec.schedule(new Runnable() {
                 public void run() {
                     CoreHelper.setComment(Structure.stereotype, api.getIssueFromList());
+
+                    //adding values to the properties
+                    List<Property> propertyList = new ArrayList<>();
+                    Issue issueProperty = api.getProperties();
+                    Structure.property.setName("Status:" + " " + issueProperty.getStatus());
+                    Structure.propertyAuthor.setName("Author:" + " " + issueProperty.getAuthor());
+                    Structure.propertyStartDate.setName("Start Date : " + " " + issueProperty.getStartDate());
+                    Structure.propertyTracker.setName("Tracker:" + "  " + issueProperty.getTracker());
+                    Structure.propertyPriority.setName("Priority: " + " " + issueProperty.getPriority());
+                    Structure.propertySubject.setName("Subject:" + " " + issueProperty.getSubject());
+                    propertyList.add(Structure.property);
+                    propertyList.add(Structure.propertyAuthor);
+                    propertyList.add(Structure.propertyStartDate);
+                    propertyList.add(Structure.propertyTracker);
+                    propertyList.add(Structure.propertyPriority);
+                    propertyList.add(Structure.propertySubject);
+                    for (Property prop:
+                            propertyList ) {
+                        prop.setOwner(Structure.stereotype);
+                    }
                 }
             }, 3, TimeUnit.SECONDS);
             exec.shutdown();
@@ -257,6 +309,10 @@ public class BaseTicketPanel extends JPanel {
     protected JButton buttonOk;
     private RedmineApi api;
     private JButton showTicket;
+    private JComboBox priorityBox;
+    private JLabel priority;
+    private JLabel tracker;
+    private JComboBox trackerBox;
 
 
 }

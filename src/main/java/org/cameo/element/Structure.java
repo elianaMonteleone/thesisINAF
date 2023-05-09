@@ -37,6 +37,13 @@ public class Structure {
     private Project project;
     private ElementsFactory f;
     public static Stereotype stereotype;
+    public static Property property;
+    public static Property propertyAuthor;
+    public static Property propertyStartDate;
+    public static Property propertyTracker;
+    public static Property propertyPriority;
+    public static Property propertySubject;
+
 
     public Structure() {
         this.project = Application.getInstance().getProject();
@@ -62,19 +69,16 @@ public class Structure {
         this.stereotype = f.createStereotypeInstance();
         this.stereotype.setName("Ticket");
         this.stereotype.setOwner(profile);
-        //add Author and Status values into Ticket Stereotype's properties
-        Property property = f.createPropertyInstance();
-        Property propertyAuthor = f.createPropertyInstance();
-        List<Property> propertyList = new ArrayList<>();
-        RedmineApi api = new RedmineApi();
-        property.setName("Status:" + "  "+ api.getStatus());
-        propertyAuthor.setName("Author:" + "  "  +api.getAuthor());
-        propertyList.add(property);
-        propertyList.add(propertyAuthor);
-        for (Property prop:
-                propertyList ) {
-            prop.setOwner(stereotype);
-        }
+
+        //instantiation properties to the ticket
+        this.property = f.createPropertyInstance();
+        this.propertyAuthor = f.createPropertyInstance();
+        this.propertyStartDate = f.createPropertyInstance();
+        this.propertyTracker = f.createPropertyInstance();
+        this.propertyPriority = f.createPropertyInstance();
+        this.propertySubject = f.createPropertyInstance();
+
+
         SessionManager.getInstance().closeSession(project);
     }
 
@@ -92,19 +96,15 @@ public class Structure {
         this.stereotype = f.createStereotypeInstance();
         this.stereotype.setName("Ticket");
         this.stereotype.setOwner(element);
-        //add Author and Status values into Ticket Stereotype's properties
-        Property property = f.createPropertyInstance();
-        Property propertyAuthor = f.createPropertyInstance();
-        List<Property> propertyList = new ArrayList<>();
-        RedmineApi api = new RedmineApi();
-        property.setName("Status:" + "  "+ api.getStatus());
-        propertyAuthor.setName("Author:" + "  "  +api.getAuthor());
-        propertyList.add(property);
-        propertyList.add(propertyAuthor);
-        for (Property prop:
-            propertyList ) {
-            prop.setOwner(stereotype);
-        }
+
+        //instantiation properties to the ticket
+        this.property = f.createPropertyInstance();
+        this.propertyAuthor = f.createPropertyInstance();
+        this.propertyStartDate = f.createPropertyInstance();
+        this.propertyTracker = f.createPropertyInstance();
+        this.propertyPriority = f.createPropertyInstance();
+        this.propertySubject = f.createPropertyInstance();
+
 
         SessionManager.getInstance().closeSession(project);
     }
