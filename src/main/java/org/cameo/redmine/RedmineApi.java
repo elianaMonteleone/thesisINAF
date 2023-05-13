@@ -17,6 +17,7 @@ import javax.swing.*;
 import java.io.*;
 import java.sql.Date;
 
+import java.util.Locale;
 import java.util.logging.Logger;
 
 /**
@@ -174,6 +175,94 @@ public class RedmineApi {
             issue.setPriority(new JSONObject(responseString).getJSONObject("issue").getJSONObject("priority").getString("name"));
             issue.setTracker(new JSONObject(responseString).getJSONObject("issue").getJSONObject("tracker").getString("name"));
             issue.setStartDate(Date.valueOf(new JSONObject(responseString).getJSONObject("issue").getString("start_date")));
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == 201) {
+                System.out.println("Issue's id found successfully!");
+            } else {
+                System.out.println("Error retrieving ticket's properties: " + response.getStatusLine().getReasonPhrase() + "Error code:" + response.getStatusLine().getStatusCode());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            return issue;
+        }
+
+    }
+
+
+    /**
+     * This API will show the issue
+     * Sort by subject or priority or author
+     * @return description of the issue
+     */
+    public String getIssueBySpecifiedProperties(JTextField subject, JComboBox priority, JTextField author){
+        String redmine_api_key = "76cb1a968ce607538b54ba25cb872db2dd2e4972";
+        String url = "http://localhost:3000/issues.json?subject=" + subject.getText() + "&priority_name=" + priority.getSelectedItem() + "&author_name=" + author.getText();
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet getRequest = new HttpGet(url);
+        getRequest.addHeader("X-Redmine-API-Key", redmine_api_key);
+        getRequest.addHeader("accept", "application/json");
+
+
+        String value = null;
+        try {
+            HttpResponse response = httpClient.execute(getRequest);
+            HttpEntity entity = response.getEntity();
+            String responseString = EntityUtils.toString(entity, "UTF-8");
+            Logger.getLogger("Log of Response String: " + responseString);
+
+
+            JSONObject json = new JSONObject(responseString);
+            JSONArray issues = json.getJSONArray("issues");
+
+
+            for (int i = 0; i < issues.length(); i++) {
+                JSONObject issue = issues.getJSONObject(i);
+                String description = issue.getString("description");
+                    value = description;
+            }
+
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode == 201) {
+                System.out.println("Issue found successfully!");
+            } else {
+                System.out.println("Error retrieving issue: " + response.getStatusLine().getReasonPhrase() + "Error code:" + response.getStatusLine().getStatusCode());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            return value;
+        }
+    }
+
+
+
+    public Issue getPropertiesByIssue(JTextField subject, JComboBox priorityBox, JTextField author){
+        String redmine_api_key = "76cb1a968ce607538b54ba25cb872db2dd2e4972";
+        String url = "http://localhost:3000/issues.json?subject=" + subject.getText() + "&priority_name=" + priorityBox.getSelectedItem() + "&author_name=" + author.getText();
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet getRequest = new HttpGet(url);
+        getRequest.addHeader("X-Redmine-API-Key", redmine_api_key);
+        getRequest.addHeader("accept", "application/json");
+        Issue issue = new Issue();
+        try {
+            HttpResponse response = httpClient.execute(getRequest);
+            HttpEntity entity = response.getEntity();
+            String responseString = EntityUtils.toString(entity, "UTF-8");
+
+            JSONObject json = new JSONObject(responseString);
+            JSONArray issues = json.getJSONArray("issues");
+
+
+            for (int i = 0; i < issues.length(); i++) {
+                JSONObject issueJson = issues.getJSONObject(i);
+                issue.setAuthor(issueJson.getJSONObject("author").getString("name"));
+                issue.setStatus(issueJson.getJSONObject("status").getString("name"));
+                issue.setSubject(issueJson.getString("subject"));
+                issue.setPriority(issueJson.getJSONObject("priority").getString("name"));
+                issue.setTracker(issueJson.getJSONObject("tracker").getString("name"));
+                issue.setStartDate(Date.valueOf(issueJson.getString("start_date")));
+            }
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode == 201) {
                 System.out.println("Issue's id found successfully!");

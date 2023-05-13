@@ -8,6 +8,10 @@ import org.cameo.element.Structure;
 import org.cameo.redmine.RedmineApi;
 
 import javax.swing.*;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.PlainDocument;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -57,6 +61,14 @@ public class BaseTicketPanel extends JPanel {
         String [] trackers = {"1 - Anomaly", "2 - Evolution", "3 - Assistance"};
         trackerBox = new JComboBox(trackers);
         tracker = new JLabel();
+
+
+
+
+
+
+
+
 
         titlePanel.setBackground(new Color(255, 255, 255));
 
@@ -159,7 +171,8 @@ public class BaseTicketPanel extends JPanel {
         showTicket.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                showIssue();
+
+                showDialog();
             }
         });
 
@@ -283,14 +296,130 @@ public class BaseTicketPanel extends JPanel {
         }
     }
 
+
     /**
-     * Method when pressing "Show Ticket" button, to show the latest ticket without creating a new one
+     * Dialog to allow the user to insert the subject and search for the desired issue
      */
 
-    private void showIssue(){
+    private void showDialog(){
+        JFrame window = new JFrame();
+        window.setSize(400,300);
+        window.setLocationRelativeTo(null);
+
+        window.setTitle("Search Issue");
+
+        JButton jb = new JButton();
+        jb.setText("OK");
+        JLabel labelIssue = new JLabel("Insert the subject:");
+        JTextField subject = new JTextField(20);
+        String[] priorities = {"", "Low", "Normal", "High", "Urgent" , "Immediate"};
+        JComboBox priorityIssue = new JComboBox(priorities);
+        JLabel labelAuthor = new JLabel("Insert the author:");
+        JTextField author = new JTextField(50);
+
+        //JTextField doesn't accept white spaces, so I replace them with "-"
+        Document doc = new PlainDocument() {
+            @Override
+            public void insertString(int offs, String str, AttributeSet attr)
+                    throws BadLocationException {
+                String newstr = str.replaceAll(" ", "-");  // could use "\\s" instead of " "
+                super.insertString(offs, newstr, attr);
+            }
+
+            @Override
+            public void replace(int offs, int len, String str, AttributeSet attr)
+                    throws BadLocationException {
+                String newstr = str.replaceAll(" ", "-");  // could use "\\s" instead of " "
+                super.replace(offs, len, newstr, attr);
+            }
+        };
+        author.setDocument(doc);
+
+        createLayout(window, labelIssue,subject,priority,priorityIssue,labelAuthor,author,jb);
+
+        window.setVisible(true);
+
+        jb.addActionListener(new ActionListener() {
+                                  @Override
+                                  public void actionPerformed(ActionEvent actionEvent) {
+                                      showIssue(subject, priorityIssue,author);
+                                  }
+                              }
+        );
+
+    }
+
+
+    /**
+     * Layout of the Issue's dialog
+     * @param frame
+     * @param arg
+     */
+    private void createLayout(JFrame frame, JComponent... arg) {
+
+        Container pane = frame.getContentPane();
+        GroupLayout gl = new GroupLayout(pane);
+        pane.setLayout(gl);
+
+        gl.setAutoCreateContainerGaps(true);
+        gl.setAutoCreateGaps(true);
+
+        gl.setHorizontalGroup(gl.createParallelGroup(GroupLayout.Alignment.CENTER)
+                .addComponent(arg[0])
+                .addComponent(arg[1])
+                .addComponent(arg[2])
+                .addComponent(arg[3])
+                .addComponent(arg[4])
+                .addComponent(arg[5])
+                .addComponent(arg[6])
+        );
+
+        gl.setVerticalGroup(gl.createSequentialGroup()
+                .addComponent(arg[0])
+                .addComponent(arg[1], GroupLayout.DEFAULT_SIZE,
+                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addComponent(arg[2])
+                .addComponent(arg[3], GroupLayout.DEFAULT_SIZE,
+                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addComponent(arg[4])
+                .addComponent(arg[5], GroupLayout.DEFAULT_SIZE,
+                        GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addComponent(arg[6])
+        );
+    }
+
+
+
+
+    /**
+     * Method when pressing "Show Ticket" button, to show the ticket by subject
+     */
+
+    private void showIssue(JTextField subject, JComboBox priorityBox, JTextField author){
         Window window = SwingUtilities.getWindowAncestor(this);
-        if(JOptionPane.showConfirmDialog(null, "Do you want to see the ticket?") == JOptionPane.OK_OPTION) {
-            CoreHelper.setComment(Structure.stereotype, api.getIssueFromList());
+
+        if(!subject.getText().isEmpty() || !author.getText().isEmpty()) {
+            JOptionPane.showConfirmDialog(null, "Do you want to see the ticket?");
+            CoreHelper.setComment(Structure.stereotype, api.getIssueBySpecifiedProperties(subject,priorityBox,author));
+            //adding values to the properties
+            List<Property> propertyList = new ArrayList<>();
+            Issue issueProperty = api.getPropertiesByIssue(subject,priorityBox,author);
+            Structure.property.setName("Status:" + " " + issueProperty.getStatus());
+            Structure.propertyAuthor.setName("Author:" + " " + issueProperty.getAuthor());
+            Structure.propertyStartDate.setName("Start Date : " + " " + issueProperty.getStartDate());
+            Structure.propertyTracker.setName("Tracker:" + "  " + issueProperty.getTracker());
+            Structure.propertyPriority.setName("Priority: " + " " + issueProperty.getPriority());
+            Structure.propertySubject.setName("Subject:" + " " + issueProperty.getSubject());
+            propertyList.add(Structure.property);
+            propertyList.add(Structure.propertyAuthor);
+            propertyList.add(Structure.propertyStartDate);
+            propertyList.add(Structure.propertyTracker);
+            propertyList.add(Structure.propertyPriority);
+            propertyList.add(Structure.propertySubject);
+            for (Property prop:
+                    propertyList ) {
+                prop.setOwner(Structure.stereotype);
+            }
         }
         window.dispose();
     }
@@ -313,6 +442,7 @@ public class BaseTicketPanel extends JPanel {
     private JLabel priority;
     private JLabel tracker;
     private JComboBox trackerBox;
+
 
 
 }
