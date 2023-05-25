@@ -7,6 +7,7 @@ import org.cameo.element.Issue;
 import org.cameo.element.Structure;
 import org.cameo.redmine.RedmineApi;
 
+
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -16,6 +17,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -303,7 +306,7 @@ public class BaseTicketPanel extends JPanel {
 
     private void showDialog(){
         JFrame window = new JFrame();
-        window.setSize(400,300);
+        window.setSize(400,400);
         window.setLocationRelativeTo(null);
 
         window.setTitle("Search Issue");
@@ -316,6 +319,9 @@ public class BaseTicketPanel extends JPanel {
         JComboBox priorityIssue = new JComboBox(priorities);
         JLabel labelAuthor = new JLabel("Insert the author:");
         JTextField author = new JTextField(50);
+
+
+
 
         //JTextField doesn't accept white spaces, so I replace them with "-"
         Document doc = new PlainDocument() {
@@ -372,6 +378,7 @@ public class BaseTicketPanel extends JPanel {
                 .addComponent(arg[4])
                 .addComponent(arg[5])
                 .addComponent(arg[6])
+
         );
 
         gl.setVerticalGroup(gl.createSequentialGroup()

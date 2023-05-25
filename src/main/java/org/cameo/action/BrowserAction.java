@@ -6,6 +6,7 @@ import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Class;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Package;
 import org.cameo.element.Structure;
 import org.cameo.ui.TicketDialog;
+
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 
