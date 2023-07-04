@@ -7,7 +7,6 @@ import org.cameo.element.Issue;
 import org.cameo.element.Structure;
 import org.cameo.redmine.RedmineApi;
 
-
 import javax.swing.*;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
